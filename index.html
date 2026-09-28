@@ -3,181 +3,587 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nebula Tours | Cosmic Travel</title>
+    <title>NEXUS SHIFT | Cyberpunk Strategy</title>
     <style>
+        :root {
+            --bg-color: #06060e;
+            --panel-bg: #101021;
+            --cyan: #00f0ff;
+            --cyan-glow: rgba(0, 240, 255, 0.6);
+            --magenta: #ff007f;
+            --magenta-glow: rgba(255, 0, 127, 0.6);
+            --grid-line: #1e1e38;
+            --text-color: #e0e0ff;
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: #050510;
-            color: #ffffff;
-            overflow: hidden; /* Hide scrollbars for the space effect */
-        }
-
-        .container {
-            height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        header {
             text-align: center;
-            position: relative;
-            z-index: 10;
-            background: radial-gradient(circle at center, rgba(26,11,46,0.8) 0%, rgba(5,5,16,1) 100%);
-            transition: background 0.5s ease;
+            margin-bottom: 15px;
         }
 
         h1 {
-            font-size: clamp(3rem, 8vw, 6rem);
+            font-size: 2.2rem;
+            letter-spacing: 6px;
             text-transform: uppercase;
-            letter-spacing: 8px;
-            text-shadow: 0 0 20px #b24bf3;
-            margin-bottom: 20px;
-            animation: pulse-glow 3s ease-in-out infinite alternate;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
         }
 
-        p {
-            font-size: clamp(1rem, 3vw, 1.5rem);
-            color: #a9a9cc;
-            max-width: 600px;
-            line-height: 1.5;
-            margin-bottom: 40px;
-            padding: 0 20px;
+        .scoreboard {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 480px;
+            background: var(--panel-bg);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid #2a2a4a;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
         }
 
-        .warp-btn {
-            padding: 18px 45px;
-            font-size: 1.2rem;
-            font-family: inherit;
+        .player-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             font-weight: bold;
-            color: #fff;
-            background: transparent;
-            border: 2px solid #b24bf3;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            box-shadow: 0 0 15px #b24bf3 inset, 0 0 15px #b24bf3;
+            transition: all 0.3s ease;
+        }
+
+        .player-score.p1 { color: var(--cyan); }
+        .player-score.p2 { color: var(--magenta); }
+
+        .player-score.active {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 8px currentColor);
+        }
+
+        .score-val {
+            font-size: 1.8rem;
+        }
+
+        .turn-badge {
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 2px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: #1a1a33;
+            border: 1px solid #333366;
         }
 
-        .warp-btn:hover {
-            background: #b24bf3;
-            box-shadow: 0 0 40px #b24bf3, 0 0 20px #fff inset;
-            transform: scale(1.1);
+        .game-container {
+            position: relative;
+            width: min(88vw, 440px);
+            height: min(88vw, 440px);
+            background: var(--panel-bg);
+            border-radius: 12px;
+            border: 2px solid #2a2a50;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.1);
+            overflow: hidden;
         }
 
-        /* Dynamic Stars */
-        .star {
+        canvas {
             position: absolute;
-            background: #fff;
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
-            animation: twinkle 4s infinite alternate;
         }
 
-        @keyframes pulse-glow {
-            from { text-shadow: 0 0 10px #b24bf3, 0 0 20px #b24bf3, 0 0 30px #8a2be2; }
-            to { text-shadow: 0 0 20px #00d2ff, 0 0 30px #00d2ff, 0 0 40px #00ffff; color: #f0f8ff; }
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            z-index: 2;
         }
 
-        @keyframes twinkle {
-            0% { opacity: 0.1; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px #fff; }
+        .cell {
+            border: 1px solid var(--grid-line);
+            cursor: pointer;
+            transition: background 0.2s ease;
         }
 
-        /* Hyperspace active state */
-        body.hyperspace-active .container {
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .quadrant-highlight {
+            position: absolute;
+            z-index: 3;
+            pointer-events: none;
+            border: 2px dashed #ffffff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            display: none;
+            transition: all 0.1s ease-out;
+        }
+
+        .controls {
+            width: 100%;
+            max-width: 480px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: var(--panel-bg);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid #2a2a4a;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
             background: transparent;
-        }
-        
-        body.hyperspace-active .star {
-            width: 2px !important;
-            height: 100px !important;
-            background: #00d2ff;
-            animation: warp-speed 0.5s linear infinite;
+            border: none;
+            color: #8888aa;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        @keyframes warp-speed {
-            0% { transform: translateY(-100vh); }
-            100% { transform: translateY(100vh); }
+        .mode-btn.active {
+            background: #222244;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .action-panel {
+            background: var(--panel-bg);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #2a2a4a;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .orient-btn {
+            width: 50px;
+            height: 50px;
+            background: #181830;
+            border: 2px solid #2e2e58;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .orient-btn:hover {
+            border-color: #5555aa;
+        }
+
+        .orient-btn.selected {
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan-glow);
+            background: #202045;
+        }
+
+        .rotate-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #252550, #151530);
+            border: 1px solid #444488;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .rotate-btn:hover {
+            background: linear-gradient(135deg, #353570, #252550);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+        }
+
+        .info-text {
+            font-size: 0.8rem;
+            color: #777799;
+            text-align: center;
+            min-height: 18px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container" id="main-content">
-        <h1 id="headline">Nebula Tours</h1>
-        <p id="subtext">Book your next weekend getaway to the Andromeda Galaxy. First-class starlight suites available.</p>
-        <button class="warp-btn" id="launch-btn">Initiate Hyperdrive</button>
+    <header>
+        <h1>Nexus Shift</h1>
+    </header>
+
+    <div class="scoreboard">
+        <div class="player-score p1 active" id="p1-score-box">
+            <span>P1 (CYAN)</span>
+            <span class="score-val" id="p1-score">0</span>
+        </div>
+        <div class="turn-badge" id="turn-badge">P1 TURN</div>
+        <div class="player-score p2" id="p2-score-box">
+            <span>P2 (MAGENTA)</span>
+            <span class="score-val" id="p2-score">0</span>
+        </div>
+    </div>
+
+    <div class="game-container" id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div class="grid-overlay" id="grid-overlay"></div>
+        <div class="quadrant-highlight" id="quadrant-highlight"></div>
+    </div>
+
+    <div class="controls">
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="mode-place-btn" onclick="setMode('place')">Place Node</button>
+            <button class="mode-btn" id="mode-shift-btn" onclick="setMode('shift')">Phase Shift (2x2)</button>
+        </div>
+
+        <div class="action-panel" id="action-panel">
+            <!-- Dynamic Controls inserted by JS -->
+        </div>
+
+        <div class="info-text" id="info-text">Select orientation and click empty tile to place a Vector Node.</div>
     </div>
 
     <script>
-        // Generate a dynamic 3D-feeling starfield
-        function createStars() {
-            const starCount = 150;
-            for (let i = 0; i < starCount; i++) {
-                let star = document.createElement('div');
-                star.className = 'star';
-                
-                // Randomize size, position, and animation timing
-                let size = Math.random() * 3 + 1;
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-                star.style.left = Math.random() * 100 + 'vw';
-                star.style.top = Math.random() * 100 + 'vh';
-                star.style.animationDelay = Math.random() * 5 + 's';
-                
-                document.body.appendChild(star);
+        const GRID_SIZE = 8;
+        let board = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
+        let currentPlayer = 1; // 1: Cyan, 2: Magenta
+        let currentMode = 'place'; // 'place' or 'shift'
+        let selectedOrientation = 'NE'; // NE, ES, SW, WN
+        let selectedQuadrant = null; // {r, c} top-left of 2x2
+        let p1NexusCount = 0;
+        let p2NexusCount = 0;
+
+        const ORIENTATIONS = {
+            'NE': [{dr: -1, dc: 0}, {dr: 0, dc: 1}],
+            'ES': [{dr: 0, dc: 1}, {dr: 1, dc: 0}],
+            'SW': [{dr: 1, dc: 0}, {dr: 0, dc: -1}],
+            'WN': [{dr: 0, dc: -1}, {dr: -1, dc: 0}]
+        };
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridOverlay = document.getElementById('grid-overlay');
+        const quadHighlight = document.getElementById('quadrant-highlight');
+        const actionPanel = document.getElementById('action-panel');
+        const infoText = document.getElementById('info-text');
+
+        function init() {
+            setupCanvas();
+            createDOMGrid();
+            renderActionPanel();
+            draw();
+            window.addEventListener('resize', () => { setupCanvas(); draw(); });
+        }
+
+        function setupCanvas() {
+            const rect = document.getElementById('game-container').getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+
+        function createDOMGrid() {
+            gridOverlay.innerHTML = '';
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.r = r;
+                    cell.dataset.c = c;
+                    cell.addEventListener('mouseenter', () => handleCellHover(r, c));
+                    cell.addEventListener('click', () => handleCellClick(r, c));
+                    gridOverlay.appendChild(cell);
+                }
+            }
+            gridOverlay.addEventListener('mouseleave', () => { quadHighlight.style.display = 'none'; });
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-place-btn').classList.toggle('active', mode === 'place');
+            document.getElementById('mode-shift-btn').classList.toggle('active', mode === 'shift');
+            selectedQuadrant = null;
+            quadHighlight.style.display = 'none';
+            renderActionPanel();
+            updateInfoText();
+        }
+
+        function renderActionPanel() {
+            actionPanel.innerHTML = '';
+            if (currentMode === 'place') {
+                const orientations = [
+                    { key: 'NE', label: '└' },
+                    { key: 'ES', label: '┌' },
+                    { key: 'SW', label: '┐' },
+                    { key: 'WN', label: '┘' }
+                ];
+                orientations.forEach(o => {
+                    const btn = document.createElement('button');
+                    btn.className = `orient-btn ${selectedOrientation === o.key ? 'selected' : ''}`;
+                    btn.innerText = o.label;
+                    btn.onclick = () => {
+                        selectedOrientation = o.key;
+                        renderActionPanel();
+                    };
+                    actionPanel.appendChild(btn);
+                });
+            } else {
+                const rotateCW = document.createElement('button');
+                rotateCW.className = 'rotate-btn';
+                rotateCW.innerText = 'Rotate ↻';
+                rotateCW.onclick = () => executePhaseShift(true);
+
+                const rotateCCW = document.createElement('button');
+                rotateCCW.className = 'rotate-btn';
+                rotateCCW.innerText = 'Rotate ↺';
+                rotateCCW.onclick = () => executePhaseShift(false);
+
+                actionPanel.appendChild(rotateCW);
+                actionPanel.appendChild(rotateCCW);
             }
         }
 
-        // Handle the Hyperdrive animation sequence
-        document.getElementById('launch-btn').addEventListener('click', function() {
-            const btn = this;
-            const headline = document.getElementById('headline');
-            const subtext = document.getElementById('subtext');
-            
-            btn.style.display = 'none';
-            subtext.style.display = 'none';
-            headline.innerText = 'CALCULATING TRAJECTORY...';
-            headline.style.animation = 'none';
-            headline.style.color = '#ffaa00';
-            headline.style.textShadow = '0 0 20px #ffaa00';
+        function updateInfoText() {
+            if (currentMode === 'place') {
+                infoText.innerText = `P${currentPlayer}: Choose orientation and click an empty cell.`;
+            } else {
+                infoText.innerText = selectedQuadrant 
+                    ? `P${currentPlayer}: Click Rotate to shift quadrant at (${selectedQuadrant.c}, ${selectedQuadrant.r}).`
+                    : `P${currentPlayer}: Hover over board to select a 2x2 quadrant.`;
+            }
+        }
 
-            // Phase 1: Prep
-            setTimeout(() => {
-                headline.innerText = 'HYPERSPACE ENGAGED';
-                headline.style.color = '#00d2ff';
-                headline.style.textShadow = '0 0 40px #00d2ff';
-                document.body.classList.add('hyperspace-active');
-            }, 1500);
+        function handleCellHover(r, c) {
+            if (currentMode === 'shift') {
+                let qr = Math.min(r, GRID_SIZE - 2);
+                let qc = Math.min(c, GRID_SIZE - 2);
+                selectedQuadrant = { r: qr, c: qc };
 
-            // Phase 2: Arrival
-            setTimeout(() => {
-                document.body.classList.remove('hyperspace-active');
-                document.body.style.backgroundColor = '#ffffff';
-                headline.style.display = 'none';
-                
-                // Flash to white, then settle into the destination
-                setTimeout(() => {
-                    document.body.style.backgroundColor = '#000814';
-                    headline.style.display = 'block';
-                    headline.innerText = 'WELCOME TO ANDROMEDA';
-                    headline.style.color = '#fff';
-                    headline.style.textShadow = '0 0 30px #ff007f';
-                    subtext.style.display = 'block';
-                    subtext.innerText = 'Gravity normal. Temperature 72°F. Enjoy your stay.';
-                }, 200);
-            }, 4500);
-        });
+                const container = document.getElementById('game-container').getBoundingClientRect();
+                const cellSize = container.width / GRID_SIZE;
 
-        // Initialize stars on load
-        window.onload = createStars;
+                quadHighlight.style.width = `${cellSize * 2}px`;
+                quadHighlight.style.height = `${cellSize * 2}px`;
+                quadHighlight.style.top = `${qr * cellSize}px`;
+                quadHighlight.style.left = `${qc * cellSize}px`;
+                quadHighlight.style.display = 'block';
+                updateInfoText();
+            }
+        }
+
+        function handleCellClick(r, c) {
+            if (currentMode === 'place') {
+                if (board[r][c] !== null) return;
+                board[r][c] = { player: currentPlayer, orientation: selectedOrientation };
+                finishTurn();
+            }
+        }
+
+        function executePhaseShift(clockwise) {
+            if (!selectedQuadrant) return;
+            const { r, c } = selectedQuadrant;
+
+            const q = [
+                board[r][c],     board[r][c+1],
+                board[r+1][c],   board[r+1][c+1]
+            ];
+
+            const rotateOrient = (orient) => {
+                if (!orient) return null;
+                const cwMap = { 'NE': 'ES', 'ES': 'SW', 'SW': 'WN', 'WN': 'NE' };
+                const ccwMap = { 'NE': 'WN', 'WN': 'SW', 'SW': 'ES', 'ES': 'NE' };
+                return clockwise ? cwMap[orient] : ccwMap[orient];
+            };
+
+            const applyRot = (node) => node ? { ...node, orientation: rotateOrient(node.orientation) } : null;
+
+            if (clockwise) {
+                board[r][c+1]   = applyRot(q[0]);
+                board[r+1][c+1] = applyRot(q[1]);
+                board[r][c]     = applyRot(q[2]);
+                board[r+1][c]   = applyRot(q[3]);
+            } else {
+                board[r+1][c]   = applyRot(q[0]);
+                board[r][c]     = applyRot(q[1]);
+                board[r+1][c+1] = applyRot(q[2]);
+                board[r][c+1]   = applyRot(q[3]);
+            }
+
+            finishTurn();
+        }
+
+        function finishTurn() {
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            updateUI();
+            draw();
+        }
+
+        function updateUI() {
+            document.getElementById('p1-score-box').classList.toggle('active', currentPlayer === 1);
+            document.getElementById('p2-score-box').classList.toggle('active', currentPlayer === 2);
+            document.getElementById('turn-badge').innerText = `P${currentPlayer} TURN`;
+            document.getElementById('turn-badge').style.borderColor = currentPlayer === 1 ? 'var(--cyan)' : 'var(--magenta)';
+            updateInfoText();
+        }
+
+        function draw() {
+            const container = document.getElementById('game-container').getBoundingClientRect();
+            const w = container.width;
+            const cellSize = w / GRID_SIZE;
+
+            ctx.clearRect(0, 0, w, w);
+
+            // Calculate lasers & Nexus points
+            let beams = [];
+            let cellBeams = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null).map(() => []));
+
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const node = board[r][c];
+                    if (node) {
+                        const dirs = ORIENTATIONS[node.orientation];
+                        dirs.forEach(d => {
+                            let currR = r + d.dr;
+                            let currC = c + d.dc;
+                            let path = [{r, c}];
+
+                            while (currR >= 0 && currR < GRID_SIZE && currC >= 0 && currC < GRID_SIZE) {
+                                path.push({r: currR, c: currC});
+                                cellBeams[currR][currC].push({ player: node.player, dir: d });
+                                if (board[currR][currC] !== null) break; // blocked
+                                currR += d.dr;
+                                currC += d.dc;
+                            }
+                            beams.push({ player: node.player, path });
+                        });
+                    }
+                }
+            }
+
+            // Draw Lasers
+            beams.forEach(b => {
+                ctx.beginPath();
+                ctx.strokeStyle = b.player === 1 ? '#00f0ff' : '#ff007f';
+                ctx.lineWidth = 3;
+                ctx.shadowColor = ctx.strokeStyle;
+                ctx.shadowBlur = 10;
+
+                for (let i = 0; i < b.path.length; i++) {
+                    let x = b.path[i].c * cellSize + cellSize / 2;
+                    let y = b.path[i].r * cellSize + cellSize / 2;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.shadowBlur = 0; // reset
+            });
+
+            // Calculate and Draw Nexus Points
+            p1NexusCount = 0;
+            p2NexusCount = 0;
+
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const bList = cellBeams[r][c];
+                    const hasHoriz = bList.some(b => b.dir.dc !== 0);
+                    const hasVert = bList.some(b => b.dir.dr !== 0);
+
+                    if (hasHoriz && hasVert && !board[r][c]) {
+                        const lastBeam = bList[bList.length - 1];
+                        if (lastBeam.player === 1) p1NexusCount++;
+                        else p2NexusCount++;
+
+                        let cx = c * cellSize + cellSize / 2;
+                        let cy = r * cellSize + cellSize / 2;
+
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+                        ctx.fillStyle = lastBeam.player === 1 ? '#00f0ff' : '#ff007f';
+                        ctx.shadowColor = ctx.fillStyle;
+                        ctx.shadowBlur = 15;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+            }
+
+            // Update scores
+            document.getElementById('p1-score').innerText = p1NexusCount;
+            document.getElementById('p2-score').innerText = p2NexusCount;
+
+            // Draw Nodes
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const node = board[r][c];
+                    if (node) {
+                        let cx = c * cellSize + cellSize / 2;
+                        let cy = r * cellSize + cellSize / 2;
+
+                        ctx.beginPath();
+                        ctx.fillStyle = '#101025';
+                        ctx.strokeStyle = node.player === 1 ? '#00f0ff' : '#ff007f';
+                        ctx.lineWidth = 2;
+                        ctx.shadowColor = ctx.strokeStyle;
+                        ctx.shadowBlur = 8;
+                        ctx.fillRect(cx - cellSize * 0.3, cy - cellSize * 0.3, cellSize * 0.6, cellSize * 0.6);
+                        ctx.strokeRect(cx - cellSize * 0.3, cy - cellSize * 0.3, cellSize * 0.6, cellSize * 0.6);
+                        ctx.shadowBlur = 0;
+
+                        // Direction indicator arrows
+                        ctx.fillStyle = ctx.strokeStyle;
+                        ORIENTATIONS[node.orientation].forEach(d => {
+                            ctx.beginPath();
+                            ctx.arc(cx + d.dc * 10, cy + d.dr * 10, 3, 0, Math.PI * 2);
+                            ctx.fill();
+                        });
+                    }
+                }
+            }
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
