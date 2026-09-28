@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Mega Tic-Tac-Toe Online</title>
-  <!-- Google Fonts & PeerJS CDN -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -13,18 +12,18 @@
   <style>
     :root {
       --bg-dark: #090d16;
-      --card-bg: rgba(20, 29, 47, 0.75);
+      --card-bg: rgba(20, 29, 47, 0.85);
       --card-border: rgba(255, 255, 255, 0.12);
       --color-x: #38bdf8;
-      --color-x-glow: rgba(56, 189, 248, 0.5);
+      --color-x-glow: rgba(56, 189, 248, 0.4);
       --color-o: #fb7185;
-      --color-o-glow: rgba(251, 113, 133, 0.5);
+      --color-o-glow: rgba(251, 113, 133, 0.4);
       --color-active: #facc15;
-      --color-active-glow: rgba(250, 204, 21, 0.6);
+      --color-active-glow: rgba(250, 204, 21, 0.5);
       --color-draw: #94a3b8;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --radius: 16px;
+      --radius: 14px;
     }
 
     * {
@@ -32,6 +31,7 @@
       margin: 0;
       padding: 0;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -63,12 +63,12 @@
       position: relative;
       z-index: 10;
       width: 100%;
-      max-width: 1200px;
-      padding: 20px;
+      max-width: 1100px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 12px;
     }
 
     /* Header */
@@ -77,41 +77,38 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      padding: 15px 25px;
+      padding: 10px 16px;
       background: var(--card-bg);
       backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
       border-radius: var(--radius);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .brand-icon {
-      width: 42px;
-      height: 42px;
+      width: 32px;
+      height: 32px;
       background: linear-gradient(135deg, var(--color-x), var(--color-o));
-      border-radius: 12px;
+      border-radius: 8px;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 3px;
-      padding: 6px;
+      gap: 2px;
+      padding: 4px;
     }
 
     .brand-icon div {
       background: rgba(0,0,0,0.4);
-      border-radius: 3px;
+      border-radius: 2px;
     }
 
     .brand h1 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.6rem;
+      font-size: 1.2rem;
       font-weight: 700;
       background: linear-gradient(90deg, #fff, var(--text-muted));
       -webkit-background-clip: text;
@@ -120,51 +117,52 @@
 
     .header-controls {
       display: flex;
-      gap: 10px;
-      align-items: center;
+      gap: 6px;
     }
 
     .btn {
-      padding: 8px 16px;
-      border-radius: 10px;
+      padding: 6px 12px;
+      border-radius: 8px;
       border: 1px solid var(--card-border);
       background: rgba(255, 255, 255, 0.05);
       color: var(--text-main);
       font-weight: 600;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
     }
 
-    .btn:hover {
-      background: rgba(255, 255, 255, 0.15);
-      transform: translateY(-2px);
+    .btn:active {
+      transform: scale(0.96);
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #0284c7, #0369a1);
       border: none;
     }
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #0369a1, #075985);
-      box-shadow: 0 0 15px rgba(2, 132, 199, 0.5);
-    }
 
     /* Main Content Layout */
     .game-layout {
       width: 100%;
       display: grid;
-      grid-template-columns: 280px 1fr 280px;
-      gap: 20px;
+      grid-template-columns: 260px 1fr 260px;
+      gap: 12px;
       align-items: start;
     }
 
-    @media (max-width: 1024px) {
+    /* Mobile Responsive Layout Order */
+    @media (max-width: 900px) {
       .game-layout {
         grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
       }
+      .board-container { order: 1; }
+      .panel-left { order: 2; width: 100%; }
+      .panel-right { order: 3; width: 100%; }
     }
 
     /* Side Panels */
@@ -173,27 +171,33 @@
       backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
       border-radius: var(--radius);
-      padding: 20px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 10px;
     }
 
     .panel-title {
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: var(--text-muted);
       font-weight: 700;
     }
 
-    /* Player Cards */
+    /* Players Section */
+    .players-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
     .player-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
-      border-radius: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid transparent;
       transition: all 0.3s ease;
@@ -201,30 +205,30 @@
 
     .player-card.active-x {
       border-color: var(--color-x);
-      box-shadow: 0 0 15px var(--color-x-glow);
-      background: rgba(56, 189, 248, 0.08);
+      box-shadow: 0 0 12px var(--color-x-glow);
+      background: rgba(56, 189, 248, 0.1);
     }
 
     .player-card.active-o {
       border-color: var(--color-o);
-      box-shadow: 0 0 15px var(--color-o-glow);
-      background: rgba(251, 113, 133, 0.08);
+      box-shadow: 0 0 12px var(--color-o-glow);
+      background: rgba(251, 113, 133, 0.1);
     }
 
     .player-info {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .symbol-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
       display: grid;
       place-items: center;
       font-weight: 900;
-      font-size: 1.2rem;
+      font-size: 1rem;
     }
 
     .symbol-x { background: rgba(56, 189, 248, 0.2); color: var(--color-x); }
@@ -232,7 +236,7 @@
 
     .score {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: 700;
     }
 
@@ -241,17 +245,11 @@
       background: rgba(250, 204, 21, 0.1);
       border: 1px solid var(--color-active);
       color: var(--color-active);
-      padding: 12px;
-      border-radius: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
       text-align: center;
       font-weight: 600;
-      font-size: 0.95rem;
-      animation: pulseGlow 2s infinite alternate;
-    }
-
-    @keyframes pulseGlow {
-      from { box-shadow: 0 0 5px rgba(250, 204, 21, 0.2); }
-      to { box-shadow: 0 0 18px rgba(250, 204, 21, 0.6); }
+      font-size: 0.85rem;
     }
 
     /* Game Board Section */
@@ -259,13 +257,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
+      gap: 10px;
+      width: 100%;
     }
 
     .status-msg {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      min-height: 30px;
+      min-height: 28px;
       text-align: center;
     }
 
@@ -273,14 +272,14 @@
     .ultimate-board {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      background: rgba(15, 23, 42, 0.8);
-      padding: 14px;
-      border-radius: 20px;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.9);
+      padding: 8px;
+      border-radius: 16px;
       border: 1px solid var(--card-border);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
       width: 100%;
-      max-width: 580px;
+      max-width: 480px;
       aspect-ratio: 1;
     }
 
@@ -288,85 +287,81 @@
     .sub-board {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
+      gap: 4px;
       background: rgba(30, 41, 59, 0.7);
-      padding: 8px;
-      border-radius: 12px;
+      padding: 5px;
+      border-radius: 10px;
       position: relative;
       border: 2px solid transparent;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
     }
 
     .sub-board.active-target {
       border-color: var(--color-active);
-      box-shadow: 0 0 20px var(--color-active-glow);
+      box-shadow: 0 0 15px var(--color-active-glow);
       background: rgba(30, 41, 59, 0.95);
     }
 
     .sub-board.disabled-board {
-      opacity: 0.35;
-      filter: grayscale(40%);
+      opacity: 0.4;
     }
 
-    /* Large overlay when a sub-board is won */
+    /* Sub-board Won Overlay */
     .sub-board-overlay {
       position: absolute;
       inset: 0;
-      border-radius: 10px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 4rem;
+      font-size: clamp(2.2rem, 8vw, 3.5rem);
       font-weight: 900;
       z-index: 5;
       backdrop-filter: blur(4px);
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    @keyframes popIn {
-      0% { transform: scale(0); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
     }
 
     .sub-board-overlay.won-x {
       background: rgba(56, 189, 248, 0.25);
       color: var(--color-x);
-      text-shadow: 0 0 20px var(--color-x);
       border: 2px solid var(--color-x);
     }
 
     .sub-board-overlay.won-o {
       background: rgba(251, 113, 133, 0.25);
       color: var(--color-o);
-      text-shadow: 0 0 20px var(--color-o);
       border: 2px solid var(--color-o);
     }
 
     .sub-board-overlay.won-tie {
       background: rgba(148, 163, 184, 0.2);
       color: var(--color-draw);
-      font-size: 2.2rem;
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
       border: 2px solid var(--color-draw);
     }
 
-    /* Sub-cell */
+    /* Sub-cell (Fixed Overflow Issue) */
     .cell {
-      background: rgba(15, 23, 42, 0.6);
-      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
+      font-size: clamp(0.9rem, 3.8vw, 1.5rem);
       font-weight: 900;
+      line-height: 1;
       cursor: pointer;
       aspect-ratio: 1;
-      transition: all 0.15s ease;
-      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      transition: background 0.15s ease;
     }
 
     .cell:hover:not(.occupied):not(.disabled) {
-      background: rgba(255, 255, 255, 0.15);
-      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
     }
 
     .cell.disabled {
@@ -375,195 +370,28 @@
 
     .cell.x-mark {
       color: var(--color-x);
-      text-shadow: 0 0 10px var(--color-x-glow);
+      text-shadow: 0 0 8px var(--color-x-glow);
     }
 
     .cell.o-mark {
       color: var(--color-o);
-      text-shadow: 0 0 10px var(--color-o-glow);
+      text-shadow: 0 0 8px var(--color-o-glow);
     }
 
-    /* Move History Log */
-    .history-list {
-      max-height: 180px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 0.85rem;
-    }
-
-    .history-item {
-      padding: 6px 10px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 6px;
-      display: flex;
-      justify-content: space-between;
-      border-left: 3px solid transparent;
-    }
-
-    .history-item.x-turn { border-left-color: var(--color-x); }
-    .history-item.o-turn { border-left-color: var(--color-o); }
-
-    /* Online Chat Panel */
-    .chat-box {
-      display: flex;
-      flex-direction: column;
-      height: 200px;
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid var(--card-border);
-      overflow: hidden;
-    }
-
-    .chat-messages {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 0.85rem;
-    }
-
-    .chat-msg {
-      padding: 4px 8px;
-      border-radius: 6px;
-      max-width: 85%;
-      word-break: break-word;
-    }
-    .chat-msg.me {
-      align-self: flex-end;
-      background: rgba(56, 189, 248, 0.2);
-    }
-    .chat-msg.them {
-      align-self: flex-start;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .chat-input-wrap {
-      display: flex;
-      border-top: 1px solid var(--card-border);
-    }
-
-    .chat-input-wrap input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 8px 12px;
-      color: #fff;
-      outline: none;
-      font-size: 0.85rem;
-    }
-
-    .chat-input-wrap button {
-      background: var(--color-x);
-      border: none;
-      padding: 0 12px;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    /* Modal Styling */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(8px);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .modal-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal-card {
-      background: #0f172a;
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 550px;
-      padding: 25px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-header h2 {
-      font-size: 1.4rem;
-      color: #fff;
-    }
-
-    .close-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
-    .rule-step {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      margin-bottom: 10px;
-    }
-
-    .rule-num {
-      background: var(--color-x);
-      color: #000;
-      font-weight: bold;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      font-size: 0.85rem;
-    }
-
-    /* Inputs */
-    .input-field {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
-      background: rgba(0, 0, 0, 0.3);
-      color: #fff;
-      outline: none;
-      font-family: inherit;
-    }
-
+    /* Controls & Inputs */
     .radio-group {
       display: flex;
-      gap: 10px;
+      gap: 6px;
     }
 
     .radio-btn {
       flex: 1;
-      padding: 8px;
-      border-radius: 8px;
+      padding: 6px;
+      border-radius: 6px;
       border: 1px solid var(--card-border);
       text-align: center;
       cursor: pointer;
+      font-size: 0.8rem;
       background: rgba(255,255,255,0.03);
     }
 
@@ -571,147 +399,242 @@
       border-color: var(--color-x);
       background: rgba(56, 189, 248, 0.15);
       color: var(--color-x);
+      font-weight: bold;
     }
 
-    /* Toast Notification */
+    .input-field {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+      background: rgba(0, 0, 0, 0.3);
+      color: #fff;
+      outline: none;
+      font-size: 0.85rem;
+    }
+
+    /* History Log */
+    .history-list {
+      max-height: 120px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.8rem;
+    }
+
+    .history-item {
+      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      border-left: 3px solid transparent;
+    }
+    .history-item.x-turn { border-left-color: var(--color-x); }
+    .history-item.o-turn { border-left-color: var(--color-o); }
+
+    /* Chat Box */
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      height: 140px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 8px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.8rem;
+    }
+
+    .chat-msg {
+      padding: 3px 6px;
+      border-radius: 4px;
+      max-width: 85%;
+      word-break: break-word;
+    }
+    .chat-msg.me { align-self: flex-end; background: rgba(56, 189, 248, 0.2); }
+    .chat-msg.them { align-self: flex-start; background: rgba(255, 255, 255, 0.08); }
+
+    .chat-input-wrap {
+      display: flex;
+      border-top: 1px solid var(--card-border);
+    }
+    .chat-input-wrap input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 6px 8px;
+      color: #fff;
+      outline: none;
+      font-size: 0.8rem;
+    }
+    .chat-input-wrap button {
+      background: var(--color-x);
+      border: none;
+      padding: 0 10px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .modal-card {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    /* Toast */
     .toast {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(15, 23, 42, 0.9);
+      bottom: 16px;
+      left: 50%;
+      transform: translate(-50%, 80px);
+      background: rgba(15, 23, 42, 0.95);
       border: 1px solid var(--color-x);
       color: #fff;
-      padding: 12px 20px;
-      border-radius: 10px;
+      padding: 8px 16px;
+      border-radius: 20px;
       z-index: 1000;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      transform: translateY(100px);
+      font-size: 0.85rem;
       opacity: 0;
       transition: all 0.3s ease;
+      white-space: nowrap;
     }
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
   </style>
 </head>
 <body>
 
-  <!-- Background Particle & Confetti Canvas -->
   <canvas id="bgCanvas"></canvas>
   <canvas id="confettiCanvas"></canvas>
 
   <div class="app-container">
     
-    <!-- Top Bar Navigation -->
     <header>
       <div class="brand">
-        <div class="brand-icon">
-          <div></div><div></div><div></div><div></div>
-        </div>
+        <div class="brand-icon"><div></div><div></div><div></div><div></div></div>
         <h1>MEGA TIC-TAC-TOE</h1>
       </div>
-
       <div class="header-controls">
-        <button class="btn" id="btnRules">📖 How to Play</button>
-        <button class="btn" id="btnSound">🔊 Sound</button>
-        <button class="btn btn-primary" id="btnNewGame">🔄 New Game</button>
+        <button class="btn" id="btnRules">📖 Rules</button>
+        <button class="btn" id="btnSound">🔊</button>
+        <button class="btn btn-primary" id="btnNewGame">🔄 Reset</button>
       </div>
     </header>
 
-    <!-- Main Application Layout -->
     <div class="game-layout">
 
-      <!-- Left Panel: Mode & Player Status -->
-      <div class="panel">
-        <span class="panel-title">Game Mode</span>
+      <!-- Left Panel: Mode & Player Info -->
+      <div class="panel panel-left">
+        <span class="panel-title">Mode</span>
         <div class="radio-group">
-          <div class="radio-btn selected" id="modeLocal" onclick="setGameMode('local')">Local 2P</div>
+          <div class="radio-btn selected" id="modeLocal" onclick="setGameMode('local')">Pass & Play</div>
           <div class="radio-btn" id="modeAI" onclick="setGameMode('ai')">vs AI</div>
           <div class="radio-btn" id="modeOnline" onclick="setGameMode('online')">Online</div>
         </div>
 
-        <!-- AI Level Selector (Shown in AI Mode) -->
         <div id="aiLevelGroup" style="display: none;">
-          <span class="panel-title">AI Difficulty</span>
-          <select id="aiDifficulty" class="input-field" style="margin-top: 5px;">
-            <option value="easy">Easy Bot</option>
-            <option value="medium" selected>Medium Bot</option>
-            <option value="smart">Smart AI</option>
+          <span class="panel-title">Bot Level</span>
+          <select id="aiDifficulty" class="input-field" style="margin-top: 4px;">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="smart">Smart</option>
           </select>
         </div>
 
-        <!-- Online Controls (Shown in Online Mode) -->
-        <div id="onlineControls" style="display: none; flex-direction: column; gap: 10px;">
-          <span class="panel-title">Multiplayer Lobby</span>
+        <div id="onlineControls" style="display: none; flex-direction: column; gap: 8px;">
+          <span class="panel-title">Online Room</span>
           <button class="btn btn-primary" style="width:100%" onclick="createOnlineRoom()">Create Room Code</button>
           <div style="display: flex; gap: 6px;">
-            <input type="text" id="joinRoomInput" class="input-field" placeholder="Enter Room Code">
+            <input type="text" id="joinRoomInput" class="input-field" placeholder="Room Code">
             <button class="btn" onclick="joinOnlineRoom()">Join</button>
           </div>
-          <div id="roomCodeDisplay" style="font-size:0.85rem; color: var(--color-x); word-break: break-all;"></div>
+          <div id="roomCodeDisplay" style="font-size:0.8rem; color: var(--color-x); word-break: break-all;"></div>
         </div>
 
-        <span class="panel-title" style="margin-top: 10px;">Players</span>
-        
-        <!-- Player X Card -->
-        <div class="player-card" id="cardX">
-          <div class="player-info">
-            <div class="symbol-badge symbol-x">X</div>
-            <div>
-              <div id="nameX" style="font-weight: 700;">Player 1</div>
-              <div style="font-size:0.75rem; color: var(--text-muted);">Starts Game</div>
+        <span class="panel-title">Scoreboard</span>
+        <div class="players-row">
+          <div class="player-card" id="cardX">
+            <div class="player-info">
+              <div class="symbol-badge symbol-x">X</div>
+              <div id="nameX" style="font-size: 0.85rem; font-weight: 700;">Player 1</div>
             </div>
+            <div class="score" id="scoreX">0</div>
           </div>
-          <div class="score" id="scoreX">0</div>
-        </div>
-
-        <!-- Player O Card -->
-        <div class="player-card" id="cardO">
-          <div class="player-info">
-            <div class="symbol-badge symbol-o">O</div>
-            <div>
-              <div id="nameO" style="font-weight: 700;">Player 2</div>
-              <div style="font-size:0.75rem; color: var(--text-muted);" id="subTextO">Second</div>
+          <div class="player-card" id="cardO">
+            <div class="player-info">
+              <div class="symbol-badge symbol-o">O</div>
+              <div id="nameO" style="font-size: 0.85rem; font-weight: 700;">Player 2</div>
             </div>
+            <div class="score" id="scoreO">0</div>
           </div>
-          <div class="score" id="scoreO">0</div>
         </div>
 
-        <!-- Target Board Pointer -->
         <div class="target-banner" id="targetBanner">
-          🎯 Target Board: <span>Any Board (Wildcard)</span>
+          🎯 Target: <span>Any Board (Wildcard)</span>
         </div>
       </div>
 
-      <!-- Center: Main Mega Grid -->
+      <!-- Center: Main Board -->
       <div class="board-container">
-        <div class="status-msg" id="statusMessage">X's Turn - Choose any cell!</div>
-        
-        <div class="ultimate-board" id="ultimateBoard">
-          <!-- 9 Sub-Boards will be dynamically rendered here -->
-        </div>
+        <div class="status-msg" id="statusMessage">X's Turn</div>
+        <div class="ultimate-board" id="ultimateBoard"></div>
       </div>
 
       <!-- Right Panel: History & Chat -->
-      <div class="panel">
+      <div class="panel panel-right">
         <span class="panel-title">Move History</span>
         <div class="history-list" id="historyList">
-          <div style="color: var(--text-muted); font-size: 0.8rem;">No moves played yet.</div>
+          <div style="color: var(--text-muted); font-size: 0.75rem;">No moves played yet.</div>
         </div>
 
-        <span class="panel-title" style="margin-top: 10px;">Live Chat / Log</span>
+        <span class="panel-title">Chat / Log</span>
         <div class="chat-box">
           <div class="chat-messages" id="chatMessages">
-            <div class="chat-msg them">Welcome to Mega Tic-Tac-Toe!</div>
+            <div class="chat-msg them">Welcome!</div>
           </div>
           <div class="chat-input-wrap">
-            <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+            <input type="text" id="chatInput" placeholder="Message..." onkeydown="if(event.key==='Enter') sendChatMessage()">
             <button onclick="sendChatMessage()">Send</button>
           </div>
         </div>
 
-        <button class="btn" id="btnUndo" onclick="undoLastMove()" style="margin-top: auto;">↩️ Undo Move</button>
+        <button class="btn" id="btnUndo" onclick="undoLastMove()">↩️ Undo</button>
       </div>
 
     </div>
@@ -720,189 +643,122 @@
   <!-- Rules Modal -->
   <div class="modal-overlay" id="rulesModal">
     <div class="modal-card">
-      <div class="modal-header">
-        <h2>How to Play Mega Tic-Tac-Toe</h2>
-        <button class="close-btn" onclick="toggleModal('rulesModal', false)">&times;</button>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3>Rules</h3>
+        <button class="btn" onclick="toggleModal('rulesModal', false)">&times;</button>
       </div>
-      <div style="font-size: 0.95rem; line-height: 1.5; color: #cbd5e1;">
-        <p style="margin-bottom: 12px;">Mega Tic-Tac-Toe is a 3x3 grid of standard 3x3 Tic-Tac-Toe boards. Winning 3 small boards in a row wins the main game!</p>
-
-        <div class="rule-step">
-          <div class="rule-num">1</div>
-          <div><strong>First Move:</strong> Player 1 places 'X' anywhere in any of the 9 sub-boards.</div>
-        </div>
-
-        <div class="rule-step">
-          <div class="rule-num">2</div>
-          <div><strong>Directed Play:</strong> The specific cell you choose dictates where your opponent MUST play next! (e.g., Playing in the top-right cell of a sub-board forces opponent into the top-right sub-board).</div>
-        </div>
-
-        <div class="rule-step">
-          <div class="rule-num">3</div>
-          <div><strong>Claiming Boards:</strong> Get 3-in-a-row inside a sub-board to claim that entire board for X or O.</div>
-        </div>
-
-        <div class="rule-step">
-          <div class="rule-num">4</div>
-          <div><strong>Wildcards:</strong> If you are sent to a sub-board that is already won or full, you get a 🌟 <em>Wildcard</em> and can play in ANY open board!</div>
-        </div>
+      <div style="font-size: 0.85rem; line-height: 1.4; color: #cbd5e1; display:flex; flex-direction:column; gap:8px;">
+        <p>1. Play on the highlighted board. Your cell pick dictates where your opponent must play next!</p>
+        <p>2. Complete 3-in-a-row inside a sub-board to win that board.</p>
+        <p>3. If sent to a full or won board, you get a 🌟 Wildcard to play anywhere!</p>
+        <p>4. Claim 3 sub-boards in a row to win the match.</p>
       </div>
-      <button class="btn btn-primary" onclick="toggleModal('rulesModal', false)" style="align-self: flex-end; margin-top: 10px;">Got It!</button>
+      <button class="btn btn-primary" onclick="toggleModal('rulesModal', false)">Got It</button>
     </div>
   </div>
 
-  <!-- Toast Container -->
   <div class="toast" id="toast"></div>
 
   <script>
-    /* ===================================================================
-       AUDIO SYNTHESIZER (Web Audio API)
-       =================================================================== */
+    /* Web Audio Synthesizer */
     class AudioFX {
-      constructor() {
-        this.ctx = null;
-        this.muted = false;
-      }
+      constructor() { this.ctx = null; this.muted = false; }
       init() {
-        if (!this.ctx) {
-          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
       }
       playMove() {
-        if (this.muted) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        if (this.muted) return; this.init();
+        const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(450, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(850, this.ctx.currentTime + 0.07);
-        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.07);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.07);
+        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.06);
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.06);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.06);
       }
       playSubWin() {
-        if (this.muted) return;
-        this.init();
-        [523.25, 659.25, 783.99].forEach((freq, idx) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
+        if (this.muted) return; this.init();
+        [523, 659, 783].forEach((f, i) => {
+          const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.06);
-          gain.gain.setValueAtTime(0.2, this.ctx.currentTime + idx * 0.06);
-          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.06 + 0.25);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(this.ctx.currentTime + idx * 0.06);
-          osc.stop(this.ctx.currentTime + idx * 0.06 + 0.25);
+          osc.frequency.setValueAtTime(f, this.ctx.currentTime + i * 0.05);
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime + i * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.05 + 0.2);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.05);
+          osc.stop(this.ctx.currentTime + i * 0.05 + 0.2);
         });
       }
       playGameWin() {
-        if (this.muted) return;
-        this.init();
-        [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
+        if (this.muted) return; this.init();
+        [523, 659, 783, 1046].forEach((f, i) => {
+          const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.12);
-          gain.gain.setValueAtTime(0.25, this.ctx.currentTime + idx * 0.12);
-          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.12 + 0.4);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(this.ctx.currentTime + idx * 0.12);
-          osc.stop(this.ctx.currentTime + idx * 0.12 + 0.4);
+          osc.frequency.setValueAtTime(f, this.ctx.currentTime + i * 0.1);
+          gain.gain.setValueAtTime(0.2, this.ctx.currentTime + i * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.1 + 0.35);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.1);
+          osc.stop(this.ctx.currentTime + i * 0.1 + 0.35);
         });
       }
       playError() {
-        if (this.muted) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        if (this.muted) return; this.init();
+        const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(160, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.12);
       }
     }
 
     const sound = new AudioFX();
 
-    /* ===================================================================
-       GAME STATE & LOGIC
-       =================================================================== */
-    const BOARD_NAMES = [
-      "Top-Left", "Top-Center", "Top-Right",
-      "Mid-Left", "Center", "Mid-Right",
-      "Bottom-Left", "Bottom-Center", "Bottom-Right"
-    ];
-
-    const WINNING_LINES = [
-      [0,1,2], [3,4,5], [6,7,8], // Rows
-      [0,3,6], [1,4,7], [2,5,8], // Cols
-      [0,4,8], [2,4,6]          // Diagonals
-    ];
+    const BOARD_NAMES = ["Top-L", "Top-C", "Top-R", "Mid-L", "Center", "Mid-R", "Bot-L", "Bot-C", "Bot-R"];
+    const WINNING_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
     let gameState = {
       subBoards: Array(9).fill(null).map(() => Array(9).fill(null)),
-      subBoardStatus: Array(9).fill(null), // null, 'X', 'O', or 'T' (Tie)
-      activeSubBoard: null, // Index 0-8 or null for Wildcard
+      subBoardStatus: Array(9).fill(null),
+      activeSubBoard: null,
       currentTurn: 'X',
       gameWinner: null,
       history: [],
       scores: { X: 0, O: 0 }
     };
 
-    let gameMode = 'local'; // 'local', 'ai', 'online'
-    let myOnlineRole = null; // 'X' or 'O' in online mode
-    let peer = null;
-    let conn = null;
+    let gameMode = 'local';
+    let myOnlineRole = null;
+    let peer = null, conn = null;
 
-    /* ===================================================================
-       DOM ELEMENTS
-       =================================================================== */
     const ultimateBoardEl = document.getElementById('ultimateBoard');
     const statusMessageEl = document.getElementById('statusMessage');
     const targetBannerEl = document.getElementById('targetBanner');
     const historyListEl = document.getElementById('historyList');
     const cardX = document.getElementById('cardX');
     const cardO = document.getElementById('cardO');
-    const scoreXEl = document.getElementById('scoreX');
-    const scoreOEl = document.getElementById('scoreO');
-    const btnSound = document.getElementById('btnSound');
 
-    /* ===================================================================
-       INITIALIZATION
-       =================================================================== */
     function init() {
       createBoardDOM();
       resetGame();
       initBgCanvas();
       initConfettiCanvas();
-      
-      // Event listeners
+
       document.getElementById('btnRules').addEventListener('click', () => toggleModal('rulesModal', true));
       document.getElementById('btnNewGame').addEventListener('click', () => {
-        if (gameMode === 'online' && conn) {
-          sendNetworkData({ type: 'RESET_REQUEST' });
-        }
+        if (gameMode === 'online' && conn) sendNetworkData({ type: 'RESET_REQUEST' });
         resetGame();
       });
 
-      btnSound.addEventListener('click', () => {
+      document.getElementById('btnSound').addEventListener('click', () => {
         sound.muted = !sound.muted;
-        btnSound.textContent = sound.muted ? '🔇 Muted' : '🔊 Sound';
+        document.getElementById('btnSound').textContent = sound.muted ? '🔇' : '🔊';
       });
 
-      // Handle Direct URL Room Links
       const urlParams = new URLSearchParams(window.location.search);
       const roomParam = urlParams.get('room');
       if (roomParam) {
@@ -927,73 +783,46 @@
           cell.addEventListener('click', () => handleCellClick(m, s));
           subBoard.appendChild(cell);
         }
-
         ultimateBoardEl.appendChild(subBoard);
       }
     }
 
-    /* ===================================================================
-       MOVE & GAME LOGIC
-       =================================================================== */
     function handleCellClick(mainIdx, subIdx) {
-      // Game over check
       if (gameState.gameWinner) return;
-
-      // Online role check
       if (gameMode === 'online' && gameState.currentTurn !== myOnlineRole) {
         sound.playError();
-        showToast("Wait for opponent's turn!", "error");
+        showToast("Opponent's turn!");
         return;
       }
-
-      // AI turn check
       if (gameMode === 'ai' && gameState.currentTurn === 'O') return;
-
-      // Move validity check
       if (!isMoveValid(mainIdx, subIdx)) {
         sound.playError();
         return;
       }
-
       makeMove(mainIdx, subIdx);
-
-      // Trigger AI if in AI mode
       if (gameMode === 'ai' && !gameState.gameWinner && gameState.currentTurn === 'O') {
-        setTimeout(makeAIMove, 450);
+        setTimeout(makeAIMove, 400);
       }
     }
 
     function isMoveValid(mainIdx, subIdx) {
-      // Target board restriction
-      if (gameState.activeSubBoard !== null && gameState.activeSubBoard !== mainIdx) {
-        return false;
-      }
-      // Cannot play in closed sub-board
-      if (gameState.subBoardStatus[mainIdx] !== null) {
-        return false;
-      }
-      // Cannot play in occupied cell
-      if (gameState.subBoards[mainIdx][subIdx] !== null) {
-        return false;
-      }
+      if (gameState.activeSubBoard !== null && gameState.activeSubBoard !== mainIdx) return false;
+      if (gameState.subBoardStatus[mainIdx] !== null) return false;
+      if (gameState.subBoards[mainIdx][subIdx] !== null) return false;
       return true;
     }
 
     function makeMove(mainIdx, subIdx, isRemote = false) {
       const turn = gameState.currentTurn;
-
-      // Record move state for Undo
       gameState.history.push({
         mainIdx, subIdx, turn,
         prevActiveSubBoard: gameState.activeSubBoard,
         prevSubBoardStatus: [...gameState.subBoardStatus]
       });
 
-      // Apply move
       gameState.subBoards[mainIdx][subIdx] = turn;
       sound.playMove();
 
-      // Check Sub-Board Win
       const subWinner = checkSubBoardWin(gameState.subBoards[mainIdx]);
       if (subWinner) {
         gameState.subBoardStatus[mainIdx] = subWinner;
@@ -1003,7 +832,6 @@
         }
       }
 
-      // Check Main Board Win
       const mainWinResult = checkMainBoardWin(gameState.subBoardStatus);
       if (mainWinResult) {
         gameState.gameWinner = mainWinResult.winner;
@@ -1014,18 +842,9 @@
         }
       }
 
-      // Determine next Target Sub-Board
-      if (gameState.subBoardStatus[subIdx] !== null) {
-        // Closed target board -> Wildcard!
-        gameState.activeSubBoard = null;
-      } else {
-        gameState.activeSubBoard = subIdx;
-      }
-
-      // Swap Turn
+      gameState.activeSubBoard = (gameState.subBoardStatus[subIdx] !== null) ? null : subIdx;
       gameState.currentTurn = turn === 'X' ? 'O' : 'X';
 
-      // Send via network if online and local move
       if (gameMode === 'online' && !isRemote && conn) {
         sendNetworkData({ type: 'MOVE', mainIdx, subIdx });
       }
@@ -1039,94 +858,53 @@
           return boardArray[a];
         }
       }
-      if (boardArray.every(cell => cell !== null)) return 'T'; // Full draw
+      if (boardArray.every(cell => cell !== null)) return 'T';
       return null;
     }
 
     function checkMainBoardWin(statusArray) {
       for (const [a, b, c] of WINNING_LINES) {
         if (statusArray[a] && statusArray[a] !== 'T' && statusArray[a] === statusArray[b] && statusArray[a] === statusArray[c]) {
-          return { winner: statusArray[a], line: [a, b, c] };
+          return { winner: statusArray[a] };
         }
       }
-      // Check full draw
       if (statusArray.every(status => status !== null)) {
-        // Count X vs O
         const countX = statusArray.filter(s => s === 'X').length;
         const countO = statusArray.filter(s => s === 'O').length;
-        if (countX > countO) return { winner: 'X' };
-        if (countO > countX) return { winner: 'O' };
-        return { winner: 'T' };
+        return { winner: countX > countO ? 'X' : (countO > countX ? 'O' : 'T') };
       }
       return null;
     }
 
-    /* ===================================================================
-       AI ENGINE
-       =================================================================== */
     function makeAIMove() {
       const difficulty = document.getElementById('aiDifficulty').value;
       const validMoves = getValidMoves();
       if (validMoves.length === 0) return;
 
       let chosenMove = null;
-
       if (difficulty === 'easy') {
         chosenMove = validMoves[Math.floor(Math.random() * validMoves.length)];
       } else {
-        // Medium & Smart AI evaluation
         let bestScore = -Infinity;
-
         for (const move of validMoves) {
           let score = 0;
           const { mainIdx, subIdx } = move;
+          const testSub = [...gameState.subBoards[mainIdx]];
+          testSub[subIdx] = 'O';
 
-          // 1. Winning the sub-board
-          const testSubBoard = [...gameState.subBoards[mainIdx]];
-          testSubBoard[subIdx] = 'O';
-          if (checkSubBoardWin(testSubBoard) === 'O') {
+          if (checkSubBoardWin(testSub) === 'O') {
             score += 1000;
-
-            // 1b. Winning the whole game!
             const testMain = [...gameState.subBoardStatus];
             testMain[mainIdx] = 'O';
-            if (checkMainBoardWin(testMain)?.winner === 'O') {
-              score += 10000;
-            }
+            if (checkMainBoardWin(testMain)?.winner === 'O') score += 10000;
           }
 
-          // 2. Blocking player X sub-board win
           const testBlock = [...gameState.subBoards[mainIdx]];
           testBlock[subIdx] = 'X';
-          if (checkSubBoardWin(testBlock) === 'X') {
-            score += 700;
-          }
+          if (checkSubBoardWin(testBlock) === 'X') score += 700;
 
-          // 3. Positional preference (Center > Corners > Edges)
-          if (subIdx === 4) score += 120;
-          else if ([0, 2, 6, 8].includes(subIdx)) score += 60;
-
-          // 4. Smart AI lookahead: avoid sending opponent to a board where they can win
-          if (difficulty === 'smart') {
-            const targetBoardStatus = gameState.subBoardStatus[subIdx];
-            if (targetBoardStatus === null) {
-              const oppBoard = gameState.subBoards[subIdx];
-              let oppCanWin = false;
-              for (let k = 0; k < 9; k++) {
-                if (oppBoard[k] === null) {
-                  const tB = [...oppBoard];
-                  tB[k] = 'X';
-                  if (checkSubBoardWin(tB) === 'X') { oppCanWin = true; break; }
-                }
-              }
-              if (oppCanWin) score -= 500;
-            } else {
-              // Gives opponent Wildcard
-              score -= 300;
-            }
-          }
-
-          score += Math.random() * 15; // Random variation
+          if (subIdx === 4) score += 100;
+          score += Math.random() * 10;
 
           if (score > bestScore) {
             bestScore = score;
@@ -1134,10 +912,7 @@
           }
         }
       }
-
-      if (chosenMove) {
-        makeMove(chosenMove.mainIdx, chosenMove.subIdx);
-      }
+      if (chosenMove) makeMove(chosenMove.mainIdx, chosenMove.subIdx);
     }
 
     function getValidMoves() {
@@ -1147,9 +922,7 @@
         if (gameState.subBoardStatus[m] !== null) continue;
 
         for (let s = 0; s < 9; s++) {
-          if (gameState.subBoards[m][s] === null) {
-            moves.push({ mainIdx: m, subIdx: s });
-          }
+          if (gameState.subBoards[m][s] === null) moves.push({ mainIdx: m, subIdx: s });
         }
       }
       return moves;
@@ -1157,8 +930,6 @@
 
     function undoLastMove() {
       if (gameState.history.length === 0 || gameMode === 'online') return;
-
-      // In AI mode, undo 2 moves
       const steps = (gameMode === 'ai' && gameState.history.length >= 2) ? 2 : 1;
       for (let i = 0; i < steps; i++) {
         const last = gameState.history.pop();
@@ -1182,33 +953,26 @@
       renderAll();
     }
 
-    /* ===================================================================
-       UI RENDERING
-       =================================================================== */
     function renderAll() {
       renderBoard();
       renderPlayerCards();
       renderStatus();
       renderHistory();
-      
-      scoreXEl.textContent = gameState.scores.X;
-      scoreOEl.textContent = gameState.scores.O;
+      document.getElementById('scoreX').textContent = gameState.scores.X;
+      document.getElementById('scoreO').textContent = gameState.scores.O;
       document.getElementById('btnUndo').style.display = (gameMode !== 'online') ? 'block' : 'none';
     }
 
     function renderBoard() {
       const subBoardEls = ultimateBoardEl.querySelectorAll('.sub-board');
-
       subBoardEls.forEach((subBoardEl, m) => {
         const isTarget = (gameState.activeSubBoard === m);
         const isClosed = (gameState.subBoardStatus[m] !== null);
         const isWildcard = (gameState.activeSubBoard === null);
 
-        // Highlight Active Sub-Boards
         subBoardEl.classList.toggle('active-target', (isTarget || isWildcard) && !isClosed && !gameState.gameWinner);
         subBoardEl.classList.toggle('disabled-board', !isTarget && !isWildcard && !isClosed);
 
-        // Render Closed Overlay
         let overlayEl = subBoardEl.querySelector('.sub-board-overlay');
         if (isClosed) {
           if (!overlayEl) {
@@ -1223,7 +987,6 @@
           overlayEl.remove();
         }
 
-        // Render Sub-Cells
         const cellEls = subBoardEl.querySelectorAll('.cell');
         cellEls.forEach((cellEl, s) => {
           const mark = gameState.subBoards[m][s];
@@ -1231,10 +994,9 @@
           cellEl.className = 'cell';
           if (mark === 'X') cellEl.classList.add('occupied', 'x-mark');
           if (mark === 'O') cellEl.classList.add('occupied', 'o-mark');
-
-          // Disable invalid cells
-          const isCellDisabled = isClosed || gameState.gameWinner || (!isTarget && !isWildcard) || mark !== null;
-          if (isCellDisabled) cellEl.classList.add('disabled');
+          if (isClosed || gameState.gameWinner || (!isTarget && !isWildcard) || mark !== null) {
+            cellEl.classList.add('disabled');
+          }
         });
       });
     }
@@ -1246,32 +1008,21 @@
 
     function renderStatus() {
       if (gameState.gameWinner) {
-        if (gameState.gameWinner === 'T') {
-          statusMessageEl.textContent = "🤝 Game Over - It's a Tie!";
-          statusMessageEl.style.color = "var(--color-draw)";
-        } else {
-          statusMessageEl.textContent = `🎉 Player ${gameState.gameWinner} Wins the Game!`;
-          statusMessageEl.style.color = gameState.gameWinner === 'X' ? "var(--color-x)" : "var(--color-o)";
-        }
+        statusMessageEl.textContent = gameState.gameWinner === 'T' ? "🤝 Game Draw!" : `🎉 Player ${gameState.gameWinner} Wins!`;
       } else {
-        const playerText = (gameMode === 'online') 
+        const pText = (gameMode === 'online')
           ? (gameState.currentTurn === myOnlineRole ? "Your Turn" : "Opponent's Turn")
           : `${gameState.currentTurn}'s Turn`;
-        statusMessageEl.textContent = `${playerText}`;
-        statusMessageEl.style.color = gameState.currentTurn === 'X' ? "var(--color-x)" : "var(--color-o)";
+        statusMessageEl.textContent = pText;
       }
-
-      // Target Banner Text
-      if (gameState.activeSubBoard === null) {
-        targetBannerEl.innerHTML = `🌟 Target Board: <strong>ANY Board (Wildcard)</strong>`;
-      } else {
-        targetBannerEl.innerHTML = `🎯 Target Board: <strong>${BOARD_NAMES[gameState.activeSubBoard]}</strong>`;
-      }
+      targetBannerEl.innerHTML = (gameState.activeSubBoard === null)
+        ? `🌟 Target: <strong>ANY Board</strong>`
+        : `🎯 Target: <strong>${BOARD_NAMES[gameState.activeSubBoard]}</strong>`;
     }
 
     function renderHistory() {
       if (gameState.history.length === 0) {
-        historyListEl.innerHTML = `<div style="color: var(--text-muted); font-size: 0.8rem;">No moves played yet.</div>`;
+        historyListEl.innerHTML = `<div style="color: var(--text-muted); font-size: 0.75rem;">No moves played yet.</div>`;
         return;
       }
       historyListEl.innerHTML = gameState.history.map((item, idx) => `
@@ -1282,20 +1033,15 @@
       `).reverse().join('');
     }
 
-    /* ===================================================================
-       ONLINE MULTIPLAYER (PEERJS)
-       =================================================================== */
+    /* Online Connection (PeerJS) */
     function setGameMode(mode) {
       gameMode = mode;
       document.querySelectorAll('.radio-btn').forEach(btn => btn.classList.remove('selected'));
       document.getElementById('mode' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('selected');
-
       document.getElementById('aiLevelGroup').style.display = (mode === 'ai') ? 'block' : 'none';
       document.getElementById('onlineControls').style.display = (mode === 'online') ? 'flex' : 'none';
-
-      document.getElementById('nameX').textContent = 'Player 1 (X)';
-      document.getElementById('nameO').textContent = (mode === 'ai') ? 'Smart Bot (O)' : 'Player 2 (O)';
-
+      document.getElementById('nameX').textContent = 'Player 1';
+      document.getElementById('nameO').textContent = (mode === 'ai') ? 'Bot' : 'Player 2';
       resetGame();
     }
 
@@ -1306,16 +1052,12 @@
 
     function joinOnlineRoom() {
       const code = document.getElementById('joinRoomInput').value.trim();
-      if (!code) {
-        showToast("Enter a room code!", "error");
-        return;
-      }
+      if (!code) { showToast("Enter room code!"); return; }
       initPeer(null, code);
     }
 
     function initPeer(customId = null, targetConnectId = null) {
       if (peer) peer.destroy();
-
       peer = new Peer(customId);
 
       peer.on('open', (id) => {
@@ -1323,10 +1065,10 @@
           myOnlineRole = 'X';
           const shareUrl = `${window.location.origin}${window.location.pathname}?room=${id}`;
           document.getElementById('roomCodeDisplay').innerHTML = `
-            Room Code: <strong>${id}</strong><br>
-            <button class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px;" onclick="navigator.clipboard.writeText('${shareUrl}'); showToast('Copied share link!','success')">📋 Copy Share Link</button>
+            Code: <strong>${id}</strong><br>
+            <button class="btn" style="padding:2px 6px; font-size:0.7rem; margin-top:4px;" onclick="navigator.clipboard.writeText('${shareUrl}'); showToast('Copied link!')">📋 Copy Link</button>
           `;
-          showToast("Room Created! Waiting for opponent...", "success");
+          showToast("Room created!");
         } else if (targetConnectId) {
           myOnlineRole = 'O';
           conn = peer.connect(targetConnectId);
@@ -1335,58 +1077,34 @@
       });
 
       peer.on('connection', (c) => {
-        conn = c;
-        myOnlineRole = 'X';
-        setupPeerConnection();
-      });
-
-      peer.on('error', (err) => {
-        showToast("Connection Error: " + err.type, "error");
+        conn = c; myOnlineRole = 'X'; setupPeerConnection();
       });
     }
 
     function setupPeerConnection() {
       conn.on('open', () => {
-        showToast("Connected to opponent!", "success");
-        document.getElementById('nameX').textContent = myOnlineRole === 'X' ? 'You (X)' : 'Opponent (X)';
-        document.getElementById('nameO').textContent = myOnlineRole === 'O' ? 'You (O)' : 'Opponent (O)';
+        showToast("Connected to opponent!");
+        document.getElementById('nameX').textContent = myOnlineRole === 'X' ? 'You (X)' : 'Opponent';
+        document.getElementById('nameO').textContent = myOnlineRole === 'O' ? 'You (O)' : 'Opponent';
         resetGame();
       });
-
       conn.on('data', (data) => {
-        if (data.type === 'MOVE') {
-          makeMove(data.mainIdx, data.subIdx, true);
-        } else if (data.type === 'RESET_REQUEST') {
-          resetGame();
-          showToast("Opponent restarted the game", "info");
-        } else if (data.type === 'CHAT') {
-          addChatMessage(data.text, 'them');
-        }
-      });
-
-      conn.on('close', () => {
-        showToast("Opponent disconnected", "error");
+        if (data.type === 'MOVE') makeMove(data.mainIdx, data.subIdx, true);
+        if (data.type === 'RESET_REQUEST') { resetGame(); showToast("Game reset by opponent"); }
+        if (data.type === 'CHAT') addChatMessage(data.text, 'them');
       });
     }
 
     function sendNetworkData(data) {
-      if (conn && conn.open) {
-        conn.send(data);
-      }
+      if (conn && conn.open) conn.send(data);
     }
 
-    /* ===================================================================
-       CHAT SYSTEM
-       =================================================================== */
     function sendChatMessage() {
       const input = document.getElementById('chatInput');
       const text = input.value.trim();
       if (!text) return;
-
       addChatMessage(text, 'me');
-      if (gameMode === 'online') {
-        sendNetworkData({ type: 'CHAT', text });
-      }
+      if (gameMode === 'online') sendNetworkData({ type: 'CHAT', text });
       input.value = '';
     }
 
@@ -1399,72 +1117,44 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    /* ===================================================================
-       PARTICLE & CONFETTI CANVAS FX
-       =================================================================== */
+    /* Particle Background & Confetti */
     function initBgCanvas() {
       const canvas = document.getElementById('bgCanvas');
       const ctx = canvas.getContext('2d');
-      let width = canvas.width = window.innerWidth;
-      let height = canvas.height = window.innerHeight;
-
-      const particles = Array(40).fill().map(() => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        r: Math.random() * 2 + 1,
-        dx: (Math.random() - 0.5) * 0.5,
-        dy: (Math.random() - 0.5) * 0.5,
-        alpha: Math.random() * 0.5 + 0.1
+      let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;
+      const particles = Array(25).fill().map(() => ({
+        x: Math.random() * width, y: Math.random() * height,
+        r: Math.random() * 2 + 1, dx: (Math.random() - 0.5) * 0.4, dy: (Math.random() - 0.5) * 0.4
       }));
 
       function animate() {
         ctx.clearRect(0, 0, width, height);
         particles.forEach(p => {
-          p.x += p.dx;
-          p.y += p.dy;
-          if (p.x < 0) p.x = width;
-          if (p.x > width) p.x = 0;
-          if (p.y < 0) p.y = height;
-          if (p.y > height) p.y = 0;
-
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(56, 189, 248, ${p.alpha})`;
-          ctx.fill();
+          p.x += p.dx; p.y += p.dy;
+          if (p.x < 0) p.x = width; if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height; if (p.y > height) p.y = 0;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.25)'; ctx.fill();
         });
         requestAnimationFrame(animate);
       }
       animate();
-
-      window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-      });
+      window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
     }
 
     let confettiParticles = [];
     function initConfettiCanvas() {
       const canvas = document.getElementById('confettiCanvas');
       const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 
       function renderConfetti() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         confettiParticles.forEach((p, idx) => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += 0.15; // Gravity
-          p.alpha -= 0.01;
-
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.rotation);
-          ctx.fillStyle = p.color;
-          ctx.globalAlpha = Math.max(0, p.alpha);
-          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.alpha -= 0.012;
+          ctx.save(); ctx.translate(p.x, p.y); ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
           ctx.restore();
-
           if (p.alpha <= 0) confettiParticles.splice(idx, 1);
         });
         requestAnimationFrame(renderConfetti);
@@ -1473,17 +1163,12 @@
     }
 
     function spawnVictoryConfetti() {
-      const colors = ['#38bdf8', '#fb7185', '#facc15', '#34d399', '#a855f7'];
-      for (let i = 0; i < 150; i++) {
+      const colors = ['#38bdf8', '#fb7185', '#facc15', '#34d399'];
+      for (let i = 0; i < 90; i++) {
         confettiParticles.push({
-          x: window.innerWidth / 2,
-          y: window.innerHeight / 2,
-          vx: (Math.random() - 0.5) * 18,
-          vy: (Math.random() - 0.8) * 18,
-          size: Math.random() * 8 + 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: Math.random() * Math.PI,
-          alpha: 1
+          x: window.innerWidth / 2, y: window.innerHeight / 2,
+          vx: (Math.random() - 0.5) * 14, vy: (Math.random() - 0.8) * 14,
+          size: Math.random() * 6 + 3, color: colors[Math.floor(Math.random() * colors.length)], alpha: 1
         });
       }
     }
@@ -1492,40 +1177,26 @@
       const subBoardEl = document.querySelector(`.sub-board[data-main-idx="${mainIdx}"]`);
       if (!subBoardEl) return;
       const rect = subBoardEl.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-
-      for (let i = 0; i < 35; i++) {
+      for (let i = 0; i < 20; i++) {
         confettiParticles.push({
-          x: centerX,
-          y: centerY,
-          vx: (Math.random() - 0.5) * 8,
-          vy: (Math.random() - 0.5) * 8,
-          size: Math.random() * 6 + 3,
-          color: '#facc15',
-          rotation: Math.random() * Math.PI,
-          alpha: 1
+          x: rect.left + rect.width / 2, y: rect.top + rect.height / 2,
+          vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+          size: Math.random() * 5 + 2, color: '#facc15', alpha: 1
         });
       }
     }
 
-    /* ===================================================================
-       UTILITIES
-       =================================================================== */
     function toggleModal(id, open) {
       document.getElementById(id).classList.toggle('open', open);
     }
 
-    function showToast(msg, type = 'info') {
+    function showToast(msg) {
       const toast = document.getElementById('toast');
       toast.textContent = msg;
       toast.className = 'toast show';
-      setTimeout(() => {
-        toast.className = 'toast';
-      }, 3000);
+      setTimeout(() => { toast.className = 'toast'; }, 2500);
     }
 
-    // Launch App
     window.onload = init;
   </script>
 </body>
